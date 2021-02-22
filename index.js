@@ -1,5 +1,5 @@
 const express = require('express');
-// node module to deal with file paths
+
 const path = require('path');
 const app = express();
 const fs = require('fs');
@@ -11,38 +11,12 @@ const notesDB = require('./db/db.json');
 app.use(express.json());
 // allows to ...???
 app.use(express.urlencoded({extended: true}));
-// this use allows us to use out style and js sheets
+// This line tells Express to use the public folder as our static folder from which we can serve static files
 app.use(express.static(__dirname + '/public'));
 
-// defining our route where we are serving our data 
-app.get('/', (req,res)=>{
-    //.send sends data to the browser
-    res.sendFile(path.join(__dirname, 'public','index.html'));
-});
-app.get('/notes', (req,res)=>{
-    //.send sends data to the browser
-    res.sendFile(path.join(__dirname, 'public','notes.html'))
-    //res.sendFile(path.join(__dirname, 'public','css','style.css'));
-});
-app.get('/api/notes', (req,res)=>{
-    //.send sends data to the browser
-    res.send(notesDB)
-});
-
-app.post('/api/notes', (req,res)=>{
-    let note = req.body
-
-    notesDB.push(note)
-
-    note = JSON.stringify(notesDB, null, 2)
-
-    fs.writeFile('./db/db.json', note,()=>{console.log('added')})
-    res.json({
-        title :note.title,
-        text :note.text
-    });
-});
-
+//Importing from our routes 
+app.use(require('./routes/index'));
+app.use(require('./routes/notes'));
 
 
 //this looks at the environment variables in this case PORT an if that port isn't available it runs on 5000
