@@ -2,12 +2,15 @@ const express = require('express');
 // node module to deal with file paths
 const path = require('path');
 const app = express();
+const fs = require('fs');
+
+const notesDB = require('./db/db.json');
 
 
-//body Parser Middleware 
+
 app.use(express.json());
-// allows us to deal with encoded url data
-app.use(express.urlencoded({extended: false}));
+// allows to ...???
+app.use(express.urlencoded({extended: true}));
 // this use allows us to use out style and js sheets
 app.use(express.static(__dirname + '/public'));
 
@@ -18,20 +21,29 @@ app.get('/', (req,res)=>{
 });
 app.get('/notes', (req,res)=>{
     //.send sends data to the browser
-    res.sendFile(path.join(__dirname, 'public','notes.html'));
+    res.sendFile(path.join(__dirname, 'public','notes.html'))
     //res.sendFile(path.join(__dirname, 'public','css','style.css'));
 });
+app.get('/api/notes', (req,res)=>{
+    //.send sends data to the browser
+    res.send(notesDB)
+});
 
-// fs.readFile(`${__dirname}/public/css/style.css`, (err, data) => {
-//     if (err) throw err;
-//     res.writeHead(200,{'content-type': 'text/css'});
-//     res.end(data);
-// })  
-// fs.readFile(`${__dirname}/public/css/js/index.js`, (err, data) => {
-//     if (err) throw err;
-//     res.writeHead(200,{'content-type': 'text/css'});
-//     res.end(data);
-// })  
+app.post('/api/notes', (req,res)=>{
+    let note = req.body
+
+    notesDB.push(note)
+
+    note = JSON.stringify(notesDB, null, 2)
+
+    fs.writeFile('./db/db.json', note,()=>{console.log('added')})
+    res.json({
+        title :note.title,
+        text :note.text
+    });
+});
+
+
 
 //this looks at the environment variables in this case PORT an if that port isn't available it runs on 5000
 const PORT = process.env.PORT || 5000
