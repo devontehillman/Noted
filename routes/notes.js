@@ -43,10 +43,11 @@ router.delete('/api/notes/:id',(req,res)=>{
 
     if (found){
         const newFile = notesDB.filter(notesDB => notesDB.id !== req.params.id)
-        fs.writeFile('./db/db.json', JSON.stringify(newFile, null, 2),()=>{console.log('added')})
+        fs.writeFile('./db/db.json', JSON.stringify(newFile, null, 2),()=>{console.log('deleted')})
+        console.log('deletedNote')
         res.end()
     }else{
-        res.status(200).json({msg: `The note with the Id of ${req.params.id} was deleted`})
+        //res.status(200).json({msg: `The note with the Id of ${req.params.id} was deleted`})
     }
     
 });
