@@ -22,28 +22,29 @@ router.get('/api/notes', (req,res)=>{
 
 router.post('/api/notes', (req,res)=>{
     // Pulling in data from my json folder and pushing in the new note (sent in req body)
-    newNote = {
+    const newNote = {
         id: uuid.v4(),
         title: req.body.title,
         text: req.body.text
     }
     notesDB.push(newNote);
     // converting notes db back to JSON string and storing it in new Var
-    note = JSON.stringify(notesDB, null, 2)
+    const note = JSON.stringify(notesDB, null, 2)
     // pushing new not into json file
-    fs.writeFile('./db/db.json', note,()=>{console.log('added')})
+    fs.writeFileSync('./db/db.json', note,()=>{console.log('added')})
     // ending response
     res.send(notesDB)
 });
 
 router.delete('/api/notes/:id',(req,res)=>{
     // checks data base to see of the note with the id exist 
+    let deleteItem = req.params.id;
+    notes.splice(deleteItem, 1);
+    let postDelete = JSON.stringify(notes, null, 2)
 
-        const newFile = notesDB.filter(notesDB => notesDB.id !== req.params.id)
-        fs.writeFile('./db/db.json', JSON.stringify(newFile, null, 2),()=>{console.log('added')})
-        res.end()
-    
-
+    fs.writeFile('./db/db.json', postDelete, (err) =>
+    err ? console.log(err) : console.log("Note Successfully Deleted"));
+    res.end();
 });
 
 
