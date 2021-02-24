@@ -23,3 +23,5 @@ app.use(require('./routes/notes'));
 const PORT = process.env.PORT || 5000
 
 app.listen(PORT, ()=> console.log(`Sever started on port ${PORT}`));
+
+// link to deployed server https://obscure-inlet-06343.herokuapp.com/

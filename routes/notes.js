@@ -21,7 +21,7 @@ router.get('/api/notes', (req,res)=>{
 });
 
 router.post('/api/notes', (req,res)=>{
-    // Pulling in data from my json folder and pushing the in the newnote (sent in req body)
+    // Pulling in data from my json folder and pushing in the new note (sent in req body)
     newNote = {
         id: uuid.v4(),
         title: req.body.title,
@@ -33,27 +33,18 @@ router.post('/api/notes', (req,res)=>{
     // pushing new not into json file
     fs.writeFile('./db/db.json', note,()=>{console.log('added')})
     // ending response
-    res.end()
+    res.send(notesDB)
 });
 
 router.delete('/api/notes/:id',(req,res)=>{
     // checks data base to see of the note with the id exist 
-    
-    const found = notesDB.some(notesDB => notesDB.id === req.params.id)
 
-    if (found){
         const newFile = notesDB.filter(notesDB => notesDB.id !== req.params.id)
-        fs.writeFile('./db/db.json', JSON.stringify(newFile, null, 2),()=>{console.log('deleted')})
-        console.log('deletedNote')
+        fs.writeFile('./db/db.json', JSON.stringify(newFile, null, 2),()=>{console.log('added')})
         res.end()
-    }else{
-        //res.status(200).json({msg: `The note with the Id of ${req.params.id} was deleted`})
-    }
     
+
 });
 
-router.get('/api/notes/:id',(req,res)=>{
-console.log(req.params.id)
-});
 
 module.exports = router;
