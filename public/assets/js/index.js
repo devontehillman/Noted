@@ -4,6 +4,7 @@ let saveNoteBtn;
 let newNoteBtn;
 let noteList;
 
+
 if (window.location.pathname === '/notes') {
   noteTitle = document.querySelector('.note-title');
   noteText = document.querySelector('.note-textarea');
@@ -11,6 +12,8 @@ if (window.location.pathname === '/notes') {
   newNoteBtn = document.querySelector('.new-note');
   noteList = document.querySelectorAll('.list-container .list-group');
 }
+
+
 
 // Show an element
 const show = (elem) => {
@@ -25,6 +28,7 @@ const hide = (elem) => {
 // activeNote is used to keep track of the note in the textarea
 let activeNote = {};
 
+// retrieving noted file form route /api/notes
 const getNotes = () =>
   fetch('/api/notes', {
     method: 'GET',
@@ -33,6 +37,7 @@ const getNotes = () =>
     },
   });
 
+// sending not to be saved to route /api/notes
 const saveNote = (note) =>
   fetch('/api/notes', {
     method: 'POST',
@@ -42,10 +47,6 @@ const saveNote = (note) =>
     body: JSON.stringify(note),
 
   })
-  .then(res => res.json())
-  .then(data => console.log(`sending`, data))
-  .catch(err => console.log(err));
-
 
 const deleteNote = (id) =>
   fetch(`/api/notes/${id}`, {
@@ -66,6 +67,8 @@ const renderActiveNote = () => {
   } else {
     noteTitle.value = '';
     noteText.value = '';
+    noteTitle.removeAttribute('readonly', false);
+    noteText.removeAttribute('readonly', false);
   }
 };
 
@@ -87,7 +90,7 @@ const handleNoteDelete = (e) => {
 
   const note = e.target;
   const noteId = JSON.parse(note.parentElement.getAttribute('data-note')).id;
-
+  console.log(noteId)
   if (activeNote.id === noteId) {
     activeNote = {};
   }
@@ -100,8 +103,12 @@ const handleNoteDelete = (e) => {
 
 // Sets the activeNote and displays it
 const handleNoteView = (e) => {
+  // console.log('click')
+  // console.log(activeNote)
   e.preventDefault();
   activeNote = JSON.parse(e.target.parentElement.getAttribute('data-note'));
+  noteTitle.value = activeNote.title;
+  noteText.value = activeNote.text;
   renderActiveNote();
 };
 
@@ -129,7 +136,7 @@ const renderNoteList = async (notes) => {
   let noteListItems = [];
 
   // Returns HTML element with or without a delete button
-  const createLi = (text, delBtn = true) => {
+  const createLi = (text, delBtn  = true, viewBtn = true) => {
     const liEl = document.createElement('li');
     liEl.classList.add('list-group-item');
 
@@ -151,6 +158,21 @@ const renderNoteList = async (notes) => {
       delBtnEl.addEventListener('click', handleNoteDelete);
 
       liEl.append(delBtnEl);
+    }
+    if (viewBtn) {
+      const viewBtnEl = document.createElement('i');
+      viewBtnEl.classList.add(
+        'fas',
+        'fa-eye',
+        'float-right',
+        'text-help',
+        'delete-note'
+      );
+      viewBtnEl.setAttribute("style", "color: #0066ff; Margin-right: 10px;")
+      
+      viewBtnEl.addEventListener('click', handleNoteView);
+
+      liEl.append(viewBtnEl);
     }
 
     return liEl;
@@ -182,4 +204,8 @@ if (window.location.pathname === '/notes') {
   noteText.addEventListener('keyup', handleRenderSaveBtn);
 }
 
+
 getAndRenderNotes();
+
+// delete function 
+// have to know how to access a ... by and id from the table
